@@ -32,3 +32,14 @@ Cache::config('redis', [
     'server' => ['10.10.10.10:6379', '10.10.10.20:6379', '10.10.10.30:6379']
 ]);
 ```
+
+## Slave failover / distribution
+
+Slave failover / distibution can be configured by `failover` configuration key. See [related chapter](https://github.com/phpredis/phpredis/blob/master/cluster.markdown#automatic-slave-failover--distribution) in phpredis cluster readme.
+
+Possible values are:
+
+- *none* (default)
+- *error*
+- *distribute*
+- *slaves*

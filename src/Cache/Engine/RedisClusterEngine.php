@@ -41,7 +41,8 @@ class RedisClusterEngine extends RedisEngine
         'probability' => 100,
         'server' => [],
         'timeout' => 2,
-        'read_timeout' => 2
+        'read_timeout' => 2,
+        'failover' => 'none'
     ];
 
     /**
@@ -65,6 +66,23 @@ class RedisClusterEngine extends RedisEngine
     {
         try {
             $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent']);
+
+            switch ($this->_config['failover']) {
+                case 'error':
+                    $this->_Redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_ERROR);
+                    break;
+
+                case 'distribute':
+                    $this->_Redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_DISTRIBUTE);
+                    break;
+
+                case 'slaves':
+                    $this->_Redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_DISTRIBUTE_SLAVES);
+                    break;
+
+                default:
+                    $this->_Redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_NONE);
+            }
         } catch (\RedisClusterException $e) {
             return false;
         }
