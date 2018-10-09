@@ -89,4 +89,23 @@ class RedisClusterEngine extends RedisEngine
 
         return true;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear($check)
+    {
+        if ($check) {
+            return true;
+        }
+
+        $keys = $this->_Redis->keys($this->_config['prefix'] . '*');
+        $result = [];
+
+        foreach ($keys as $key) {
+            $result[] = $this->_Redis->delete($key) > 0;
+        }
+
+        return !in_array(false, $result);
+    }
 }
