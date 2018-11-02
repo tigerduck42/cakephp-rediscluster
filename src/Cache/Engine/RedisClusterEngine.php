@@ -62,6 +62,16 @@ class RedisClusterEngine extends RedisEngine
     /**
      * {@inheritdoc}
      */
+    public function delete($key)
+    {
+        $key = $this->_key($key);
+
+        return $this->_Redis->del($key) > 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function clear($check)
     {
         if ($check) {
