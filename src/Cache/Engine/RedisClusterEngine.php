@@ -78,14 +78,35 @@ class RedisClusterEngine extends RedisEngine
             return true;
         }
 
-        $keys = $this->_Redis->keys($this->_config['prefix'] . '*');
-        $result = [];
+        $result = true;
 
-        foreach ($keys as $key) {
-            $result[] = $this->_Redis->del($key) > 0;
+        foreach ($this->_Redis->_masters() as $m) {
+            $iterator = null;
+
+            do {
+                $keys = $this->_Redis->scan($iterator, $m, 'tpd_g_*');
+
+                if ($keys === false) {
+                    continue;
+                }
+
+                foreach ($keys as $key) {
+                    if ($this->_Redis->del($key) < 1) {
+                        $result = false;
+                    }
+                }
+            } while ($iterator > 0);
         }
 
-        return !in_array(false, $result);
+        while ($keys = $this->_Redis->scan($iterator, '', $this->_config['prefix'] . '*')) {
+            foreach ($keys as $key) {
+                if ($this->_Redis->del($key) < 1) {
+                    $result = false;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
