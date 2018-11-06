@@ -84,7 +84,7 @@ class RedisClusterEngine extends RedisEngine
             $iterator = null;
 
             do {
-                $keys = $this->_Redis->scan($iterator, $m, 'tpd_g_*');
+                $keys = $this->_Redis->scan($iterator, $m, $this->_config['prefix'] . '*');
 
                 if ($keys === false) {
                     continue;
@@ -96,14 +96,6 @@ class RedisClusterEngine extends RedisEngine
                     }
                 }
             } while ($iterator > 0);
-        }
-
-        while ($keys = $this->_Redis->scan($iterator, '', $this->_config['prefix'] . '*')) {
-            foreach ($keys as $key) {
-                if ($this->_Redis->del($key) < 1) {
-                    $result = false;
-                }
-            }
         }
 
         return $result;
