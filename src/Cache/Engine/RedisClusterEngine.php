@@ -27,6 +27,7 @@ class RedisClusterEngine extends RedisEngine
      * - `probability` Probability of hitting a cache gc cleanup. Setting to 0 will disable
      *    cache::gc from ever being called automatically.
      * - `server` array of Redis server hosts.
+     * - `password` Password for Redis cluster authorisation
      * - `timeout` timeout in seconds (float).
      * - `read_timeout` read timeout in seconds (float).
      *
@@ -40,6 +41,7 @@ class RedisClusterEngine extends RedisEngine
         'prefix' => 'cake_',
         'probability' => 100,
         'server' => [],
+        'password' => null,
         'timeout' => 2,
         'read_timeout' => 2,
         'failover' => 'none'
@@ -51,6 +53,10 @@ class RedisClusterEngine extends RedisEngine
     public function init(array $config = [])
     {
         if (!extension_loaded('redis')) {
+            return false;
+        }
+
+        if (!class_exists('RedisCluster')) {
             return false;
         }
 
@@ -107,7 +113,7 @@ class RedisClusterEngine extends RedisEngine
     protected function _connect()
     {
         try {
-            $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent']);
+            $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent'],  $this->_config['password']);
 
             switch ($this->_config['failover']) {
                 case 'error':
