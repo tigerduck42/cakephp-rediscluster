@@ -116,12 +116,11 @@ class RedisClusterEngine extends RedisEngine
     protected function _connect()
     {
         try {
-
             if (400 <= $this->_redisExtensionVersion) {
                 $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent'], $this->_config['password']);
             } else {
                 if (isset($this->_config['password']) && null !== $this->_config['password']) {
-                    trigger_error("Password not supported prior phpredis prior 4.0.0", E_USER_ERROR);
+                    trigger_error("Password not supported prior phpredis prior 4.0.0", E_USER_WARNING);
                 }
                 $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent']);
             }
