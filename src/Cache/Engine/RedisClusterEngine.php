@@ -14,6 +14,11 @@ class RedisClusterEngine extends RedisEngine
      * @var \RedisCluster
      */
     protected $_Redis;
+
+    /**
+     * PHP redis extension version
+     * @var string
+     */
     protected $_redisExtensionVersion;
 
     /**
