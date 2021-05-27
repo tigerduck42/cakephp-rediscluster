@@ -14,6 +14,7 @@ class RedisClusterEngine extends RedisEngine
      * @var \RedisCluster
      */
     protected $_Redis;
+    protected $_redisExtensionVersion;
 
     /**
      * The default config used unless overridden by runtime configuration.
@@ -54,6 +55,8 @@ class RedisClusterEngine extends RedisEngine
     {
         if (!extension_loaded('redis')) {
             return false;
+        } else {
+            $this->_redisExtensionVersion = filter_var(phpversion('redis'), FILTER_SANITIZE_NUMBER_INT);
         }
 
         if (!class_exists('RedisCluster')) {
@@ -113,8 +116,15 @@ class RedisClusterEngine extends RedisEngine
     protected function _connect()
     {
         try {
-            $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent'],  $this->_config['password']);
 
+            if (400 <= $this->_redisExtensionVersion) {
+                $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent'], $this->_config['password']);
+            } else {
+                if (isset($this->_config['password']) && null !== $this->_config['password']) {
+                    trigger_error("Password not supported prior phpredis prior 4.0.0", E_USER_ERROR);
+                }
+                $this->_Redis = new \RedisCluster($this->_config['name'], $this->_config['server'], $this->_config['timeout'], $this->_config['read_timeout'], $this->_config['persistent']);
+            }
             switch ($this->_config['failover']) {
                 case 'error':
                     $this->_Redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_ERROR);
