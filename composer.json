@@ -1,5 +1,5 @@
 {
-    "name": "tigerduck42/cakephp-rediscluster",
+    "name": "riesenia/cakephp-rediscluster",
     "description": "CakePHP 3.x cache engine for Redis Cluster",
     "license": "MIT",
     "authors": [
