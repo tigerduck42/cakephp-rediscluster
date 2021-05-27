@@ -6,6 +6,10 @@
         {
             "name": "Tomas Saghy",
             "email": "segy@riesenia.com"
+        },
+        {
+            "name": "Martin Mitterhauser",
+            "email": "martin.mitterhauser@gmail.com"
         }
     ],
     "require": {
